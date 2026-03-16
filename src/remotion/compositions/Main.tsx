@@ -1,55 +1,162 @@
-import { AbsoluteFill, Artifact, useCurrentFrame, useVideoConfig } from "remotion";
-import { loadFont } from "@remotion/google-fonts/SpaceMono";
+import { AbsoluteFill, Sequence, useCurrentFrame, Artifact } from "remotion";
+import { loadFont as loadGeist } from "@remotion/google-fonts/Inter";
+import { TransitionSeries, linearTiming } from "@remotion/transitions";
+import { Audio } from "@remotion/media";
 
-const LoaderDots = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+import {
+  getPresentation,
+} from "../library/components/layout/Transition";
 
-  const dot = (index: number) => {
-    const phase = (frame / fps) * 2 * Math.PI + index * 0.8;
-    return 0.35 + Math.max(0, Math.sin(phase)) * 0.65;
-  };
+import { Background } from "./scenes/Background";
+import { HeroIntro } from "./scenes/HeroIntro";
+import { ProblemScene } from "./scenes/ProblemScene";
+import { SolutionScene } from "./scenes/SolutionScene";
+import { FeaturesScene } from "./scenes/FeaturesScene";
+import { PricingScene } from "./scenes/PricingScene";
+import { IntegrationScene } from "./scenes/IntegrationScene";
+import { CTAScene } from "./scenes/CTAScene";
 
-  return (
-    <span className="inline-flex gap-1">
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          className="inline-block text-sky-300"
-          style={{ opacity: dot(i) }}
-        >
-          .
-        </span>
-      ))}
-    </span>
-  );
+const { fontFamily } = loadGeist("normal", {
+  weights: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+});
+
+// Scene durations (in frames at 30fps)
+const SCENE_DURATIONS = {
+  hero: 120,        // 4s
+  problem: 120,     // 4s
+  solution: 130,    // 4.3s
+  features: 120,    // 4s
+  pricing: 120,     // 4s
+  integration: 120, // 4s
+  cta: 120,         // 4s
 };
 
+const TRANSITION_DURATION = 18; // 0.6s transitions
+// 6 transitions total
+
+// Audio URLs
+const WHOOSH_SFX = "https://pub-e3bfc0083b0644b296a7080b21024c5f.r2.dev/sfx/1773638124660_6rzz0tfrzf_sfx_Subtle_modern_tech_whoosh_tran.mp3";
+const POP_SFX = "https://pub-e3bfc0083b0644b296a7080b21024c5f.r2.dev/sfx/1773638127482_butec94nzm6_sfx_Soft_UI_notification_pop__gent.mp3";
+const AMBIENT_SFX = "https://pub-e3bfc0083b0644b296a7080b21024c5f.r2.dev/sfx/1773638130086_xs4sz0k7k3c_sfx_Gentle_ambient_digital_hum_wit.mp3";
+
 export const Main: React.FC = () => {
-  const { fontFamily } = loadFont();
   const frame = useCurrentFrame();
+
   return (
     <>
-      {/* Leave this here to generate a thumbnail */}
+      {/* Thumbnail artifact */}
       {frame === 0 && (
         <Artifact content={Artifact.Thumbnail} filename="thumbnail.jpeg" />
       )}
-      <AbsoluteFill className="flex items-center justify-center bg-[#0f1115]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.28),transparent_45%),radial-gradient(circle_at_70%_60%,rgba(16,185,129,0.2),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:48px_48px] opacity-40" />
-        <div
-          className="flex flex-col items-center gap-4 text-center text-white drop-shadow-[0_12px_32px_rgba(0,0,0,0.55)]"
-          style={{ fontFamily, fontWeight: 700, letterSpacing: "0.01em" }}
+
+      <AbsoluteFill
+        style={{
+          fontFamily,
+          fontWeight: 400,
+          WebkitFontSmoothing: "antialiased",
+        }}
+      >
+        {/* Persistent animated background */}
+        <Background />
+
+        {/* Scene transitions */}
+        <TransitionSeries>
+          {/* Scene 1: Hero Intro */}
+          <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.hero}>
+            <HeroIntro />
+          </TransitionSeries.Sequence>
+
+          <TransitionSeries.Transition
+            presentation={getPresentation("blurDissolve")}
+            timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
+          />
+
+          {/* Scene 2: Problem */}
+          <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.problem}>
+            <ProblemScene />
+          </TransitionSeries.Sequence>
+
+          <TransitionSeries.Transition
+            presentation={getPresentation("morphRounded")}
+            timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
+          />
+
+          {/* Scene 3: Solution */}
+          <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.solution}>
+            <SolutionScene />
+          </TransitionSeries.Sequence>
+
+          <TransitionSeries.Transition
+            presentation={getPresentation("blurDissolve")}
+            timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
+          />
+
+          {/* Scene 4: Features */}
+          <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.features}>
+            <FeaturesScene />
+          </TransitionSeries.Sequence>
+
+          <TransitionSeries.Transition
+            presentation={getPresentation("wipeRight")}
+            timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
+          />
+
+          {/* Scene 5: Pricing */}
+          <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.pricing}>
+            <PricingScene />
+          </TransitionSeries.Sequence>
+
+          <TransitionSeries.Transition
+            presentation={getPresentation("blurDissolve")}
+            timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
+          />
+
+          {/* Scene 6: Integration */}
+          <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.integration}>
+            <IntegrationScene />
+          </TransitionSeries.Sequence>
+
+          <TransitionSeries.Transition
+            presentation={getPresentation("zoomIn")}
+            timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
+          />
+
+          {/* Scene 7: CTA */}
+          <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.cta}>
+            <CTAScene />
+          </TransitionSeries.Sequence>
+        </TransitionSeries>
+
+        {/* Ambient background audio - loops throughout */}
+        <Audio src={AMBIENT_SFX} volume={0.08} loop />
+
+        {/* Transition whoosh sounds */}
+        <Sequence from={SCENE_DURATIONS.hero - TRANSITION_DURATION} layout="none">
+          <Audio src={WHOOSH_SFX} volume={0.15} />
+        </Sequence>
+        <Sequence
+          from={SCENE_DURATIONS.hero + SCENE_DURATIONS.problem - 2 * TRANSITION_DURATION}
+          layout="none"
         >
-          <div className="text-4xl md:text-5xl font-bold">
-            <span className="font-extrabold text-sky-300">TypeFrames</span> is
-            building your video
-            <LoaderDots />
-          </div>
-          <div className="text-base md:text-lg text-white/70">
-            Rendering scenes, timing transitions, and polishing frames.
-          </div>
-        </div>
+          <Audio src={WHOOSH_SFX} volume={0.12} />
+        </Sequence>
+        <Sequence
+          from={
+            SCENE_DURATIONS.hero +
+            SCENE_DURATIONS.problem +
+            SCENE_DURATIONS.solution -
+            3 * TRANSITION_DURATION
+          }
+          layout="none"
+        >
+          <Audio src={WHOOSH_SFX} volume={0.12} />
+        </Sequence>
+
+        {/* Pop sound for key moments */}
+        <Sequence from={25} layout="none">
+          <Audio src={POP_SFX} volume={0.1} />
+        </Sequence>
       </AbsoluteFill>
     </>
   );
