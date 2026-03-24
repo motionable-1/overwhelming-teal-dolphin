@@ -1,7 +1,35 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, spring, interpolate, Img } from "remotion";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, spring, interpolate, Easing, Img } from "remotion";
 import { FadeInWords, SlideInText } from "../../library/components/text/TextAnimation";
-import { Counter } from "../../library/components/text/Counter";
+
+/**
+ * Simple animated price display — no Counter component, just interpolate.
+ */
+const AnimatedPrice: React.FC<{
+  to: number;
+  color: string;
+  delaySeconds: number;
+}> = ({ to, color, delaySeconds }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const delayFrames = Math.round(delaySeconds * fps);
+  const durationFrames = Math.round(1 * fps);
+
+  const value = Math.round(
+    interpolate(frame - delayFrames, [0, durationFrames], [0, to], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: Easing.out(Easing.cubic),
+    }),
+  );
+
+  return (
+    <span style={{ fontSize: 28, fontWeight: 700, color }}>
+      ${value}
+    </span>
+  );
+};
 
 export const PricingScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -41,10 +69,7 @@ export const PricingScene: React.FC = () => {
           {/* Contact-based (competitor) */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
             <div style={{ opacity: labelOpacity, display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
-                <span style={{ fontSize: 28, fontWeight: 700, color: "#DC2626" }}>$</span>
-                <Counter from={0} to={299} duration={1} delay={1.2} fixedWidth={false} style={{ fontSize: 28, fontWeight: 700, color: "#DC2626" }} />
-              </div>
+              <AnimatedPrice to={299} color="#DC2626" delaySeconds={1.2} />
               <span style={{ fontSize: 13, color: "#A8A29E" }}>/month</span>
             </div>
             <div
@@ -69,10 +94,7 @@ export const PricingScene: React.FC = () => {
           {/* Volume-based (AutoSend) */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
             <div style={{ opacity: labelOpacity, display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
-                <span style={{ fontSize: 28, fontWeight: 700, color: "#615FFF" }}>$</span>
-                <Counter from={0} to={49} duration={1} delay={1.2} fixedWidth={false} style={{ fontSize: 28, fontWeight: 700, color: "#615FFF" }} />
-              </div>
+              <AnimatedPrice to={49} color="#615FFF" delaySeconds={1.2} />
               <span style={{ fontSize: 13, color: "#A8A29E" }}>/month</span>
             </div>
             <div
