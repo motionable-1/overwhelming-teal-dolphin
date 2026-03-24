@@ -41,9 +41,10 @@ export const PricingScene: React.FC = () => {
           {/* Contact-based (competitor) */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
             <div style={{ opacity: labelOpacity, display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <span style={{ fontSize: 28, fontWeight: 700, color: "#DC2626" }}>
-                $<Counter from={0} to={299} duration={1} delay={1.2} />
-              </span>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
+                <span style={{ fontSize: 28, fontWeight: 700, color: "#DC2626" }}>$</span>
+                <Counter from={0} to={299} duration={1} delay={1.2} fixedWidth={false} style={{ fontSize: 28, fontWeight: 700, color: "#DC2626" }} />
+              </div>
               <span style={{ fontSize: 13, color: "#A8A29E" }}>/month</span>
             </div>
             <div
@@ -68,9 +69,10 @@ export const PricingScene: React.FC = () => {
           {/* Volume-based (AutoSend) */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
             <div style={{ opacity: labelOpacity, display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <span style={{ fontSize: 28, fontWeight: 700, color: "#615FFF" }}>
-                $<Counter from={0} to={49} duration={1} delay={1.2} />
-              </span>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 2 }}>
+                <span style={{ fontSize: 28, fontWeight: 700, color: "#615FFF" }}>$</span>
+                <Counter from={0} to={49} duration={1} delay={1.2} fixedWidth={false} style={{ fontSize: 28, fontWeight: 700, color: "#615FFF" }} />
+              </div>
               <span style={{ fontSize: 13, color: "#A8A29E" }}>/month</span>
             </div>
             <div
