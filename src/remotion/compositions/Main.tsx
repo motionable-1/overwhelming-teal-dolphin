@@ -13,6 +13,8 @@ import { ProblemScene } from "./scenes/ProblemScene";
 import { SolutionScene } from "./scenes/SolutionScene";
 import { FeaturesScene } from "./scenes/FeaturesScene";
 import { PricingScene } from "./scenes/PricingScene";
+import { MigrationScene } from "./scenes/MigrationScene";
+import { DeliverabilityScene } from "./scenes/DeliverabilityScene";
 import { IntegrationScene } from "./scenes/IntegrationScene";
 import { CTAScene } from "./scenes/CTAScene";
 
@@ -23,17 +25,19 @@ const { fontFamily } = loadGeist("normal", {
 
 // Scene durations (in frames at 30fps)
 const SCENE_DURATIONS = {
-  hero: 120,        // 4s
-  problem: 120,     // 4s
-  solution: 130,    // 4.3s
-  features: 120,    // 4s
-  pricing: 120,     // 4s
-  integration: 120, // 4s
-  cta: 120,         // 4s
+  hero: 120,           // 4s
+  problem: 120,        // 4s
+  solution: 130,       // 4.3s
+  features: 120,       // 4s
+  migration: 120,      // 4s - NEW
+  deliverability: 130, // 4.3s - NEW
+  pricing: 120,        // 4s
+  integration: 120,    // 4s
+  cta: 120,            // 4s
 };
 
 const TRANSITION_DURATION = 18; // 0.6s transitions
-// 6 transitions total
+// 8 transitions total
 
 // Audio URLs
 const WHOOSH_SFX = "https://pub-e3bfc0083b0644b296a7080b21024c5f.r2.dev/sfx/1773638124660_6rzz0tfrzf_sfx_Subtle_modern_tech_whoosh_tran.mp3";
@@ -102,7 +106,27 @@ export const Main: React.FC = () => {
             timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
           />
 
-          {/* Scene 5: Pricing */}
+          {/* Scene 5: Migration */}
+          <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.migration}>
+            <MigrationScene />
+          </TransitionSeries.Sequence>
+
+          <TransitionSeries.Transition
+            presentation={getPresentation("slideLeft")}
+            timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
+          />
+
+          {/* Scene 6: Deliverability */}
+          <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.deliverability}>
+            <DeliverabilityScene />
+          </TransitionSeries.Sequence>
+
+          <TransitionSeries.Transition
+            presentation={getPresentation("morphRounded")}
+            timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
+          />
+
+          {/* Scene 7: Pricing */}
           <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.pricing}>
             <PricingScene />
           </TransitionSeries.Sequence>
@@ -112,7 +136,7 @@ export const Main: React.FC = () => {
             timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
           />
 
-          {/* Scene 6: Integration */}
+          {/* Scene 8: Integration */}
           <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.integration}>
             <IntegrationScene />
           </TransitionSeries.Sequence>
@@ -122,7 +146,7 @@ export const Main: React.FC = () => {
             timing={linearTiming({ durationInFrames: TRANSITION_DURATION })}
           />
 
-          {/* Scene 7: CTA */}
+          {/* Scene 9: CTA */}
           <TransitionSeries.Sequence durationInFrames={SCENE_DURATIONS.cta}>
             <CTAScene />
           </TransitionSeries.Sequence>
