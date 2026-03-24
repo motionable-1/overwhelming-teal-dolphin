@@ -31,19 +31,20 @@ const AnimatedPrice: React.FC<{
   );
 };
 
+const MAX_BAR_HEIGHT = 220;
+
 export const PricingScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Bar chart animation for volume vs contact comparison
+  // Bar chart animation
   const barEntrance = spring({ frame, fps, delay: 12, config: { damping: 15, stiffness: 100 } });
 
-  // Volume bar (grows to show savings)
-  const volumeBarHeight = interpolate(barEntrance, [0, 1], [0, 180]);
-  // Contact bar (grows taller to show cost)
-  const contactBarHeight = interpolate(barEntrance, [0, 1], [0, 260]);
+  // Bar heights
+  const contactBarHeight = interpolate(barEntrance, [0, 1], [0, MAX_BAR_HEIGHT]);
+  const volumeBarHeight = interpolate(barEntrance, [0, 1], [0, MAX_BAR_HEIGHT * 0.55]);
 
-  // Cost labels
+  // Labels fade in
   const labelOpacity = interpolate(frame, [35, 48], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
   // Checkmark entrance
@@ -54,7 +55,7 @@ export const PricingScene: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 40 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 36 }}>
         {/* Title */}
         <FadeInWords
           className="text-[36px] font-semibold tracking-tight text-center text-balance"
@@ -64,73 +65,123 @@ export const PricingScene: React.FC = () => {
           Pay for volume, not contacts.
         </FadeInWords>
 
-        {/* Comparison chart */}
-        <div style={{ display: "flex", gap: 60, alignItems: "flex-end", height: 300 }}>
+        {/* Comparison chart — bars grow upward from a shared baseline */}
+        <div style={{ display: "flex", gap: 50, alignItems: "flex-end" }}>
           {/* Contact-based (competitor) */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-            <div style={{ opacity: labelOpacity, display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <AnimatedPrice to={299} color="#DC2626" delaySeconds={1.2} />
-              <span style={{ fontSize: 13, color: "#A8A29E" }}>/month</span>
-            </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0, width: 140 }}>
+            {/* Bar area with fixed height — bar grows upward inside */}
             <div
               style={{
                 width: 120,
-                height: contactBarHeight,
-                background: "linear-gradient(180deg, #FCA5A5, #EF4444)",
-                borderRadius: "12px 12px 4px 4px",
-                boxShadow: "0 4px 20px rgba(239,68,68,0.2)",
+                height: MAX_BAR_HEIGHT,
+                position: "relative",
+                display: "flex",
+                alignItems: "flex-end",
               }}
-            />
-            <span style={{ fontSize: 14, fontWeight: 500, color: "#78716C", textAlign: "center" }}>
-              Contact-based
-            </span>
+            >
+              <div
+                style={{
+                  width: "100%",
+                  height: contactBarHeight,
+                  background: "linear-gradient(180deg, #FCA5A5, #EF4444)",
+                  borderRadius: "12px 12px 4px 4px",
+                  boxShadow: "0 4px 20px rgba(239,68,68,0.2)",
+                }}
+              />
+            </div>
+            {/* Label + price below bar */}
+            <div
+              style={{
+                opacity: labelOpacity,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                marginTop: 14,
+                gap: 2,
+              }}
+            >
+              <AnimatedPrice to={299} color="#DC2626" delaySeconds={1.2} />
+              <span style={{ fontSize: 13, color: "#A8A29E" }}>/month</span>
+              <span style={{ fontSize: 14, fontWeight: 500, color: "#78716C", marginTop: 4 }}>
+                Contact-based
+              </span>
+            </div>
           </div>
 
           {/* VS divider */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, paddingBottom: 30 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              paddingBottom: 50,
+            }}
+          >
             <span style={{ fontSize: 18, fontWeight: 700, color: "#D6D3D1", opacity: labelOpacity }}>vs</span>
           </div>
 
           {/* Volume-based (AutoSend) */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-            <div style={{ opacity: labelOpacity, display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <AnimatedPrice to={49} color="#615FFF" delaySeconds={1.2} />
-              <span style={{ fontSize: 13, color: "#A8A29E" }}>/month</span>
-            </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0, width: 140 }}>
+            {/* Bar area with fixed height — bar grows upward inside */}
             <div
               style={{
                 width: 120,
-                height: volumeBarHeight,
-                background: "linear-gradient(180deg, #A5B4FC, #615FFF)",
-                borderRadius: "12px 12px 4px 4px",
-                boxShadow: "0 4px 20px rgba(97,95,255,0.25)",
+                height: MAX_BAR_HEIGHT,
                 position: "relative",
+                display: "flex",
+                alignItems: "flex-end",
               }}
             >
-              {/* Checkmark badge */}
               <div
                 style={{
-                  position: "absolute",
-                  top: -16,
-                  right: -16,
-                  width: 36,
-                  height: 36,
-                  borderRadius: "50%",
-                  backgroundColor: "#22C55E",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transform: `scale(${interpolate(checkEntrance, [0, 1], [0, 1])})`,
-                  opacity: interpolate(checkEntrance, [0, 1], [0, 1]),
-                  boxShadow: "0 2px 10px rgba(34,197,94,0.3)",
+                  width: "100%",
+                  height: volumeBarHeight,
+                  background: "linear-gradient(180deg, #A5B4FC, #615FFF)",
+                  borderRadius: "12px 12px 4px 4px",
+                  boxShadow: "0 4px 20px rgba(97,95,255,0.25)",
+                  position: "relative",
                 }}
               >
-                <Img src="https://api.iconify.design/lucide/check.svg?color=%23ffffff&width=20" style={{ width: 20, height: 20 }} />
+                {/* Checkmark badge */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: -16,
+                    right: -16,
+                    width: 36,
+                    height: 36,
+                    borderRadius: "50%",
+                    backgroundColor: "#22C55E",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transform: `scale(${interpolate(checkEntrance, [0, 1], [0, 1])})`,
+                    opacity: interpolate(checkEntrance, [0, 1], [0, 1]),
+                    boxShadow: "0 2px 10px rgba(34,197,94,0.3)",
+                  }}
+                >
+                  <Img src="https://api.iconify.design/lucide/check.svg?color=%23ffffff&width=20" style={{ width: 20, height: 20 }} />
+                </div>
               </div>
             </div>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#615FFF", textAlign: "center" }}>
-              Volume-based
-            </span>
+            {/* Label + price below bar */}
+            <div
+              style={{
+                opacity: labelOpacity,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                marginTop: 14,
+                gap: 2,
+              }}
+            >
+              <AnimatedPrice to={49} color="#615FFF" delaySeconds={1.2} />
+              <span style={{ fontSize: 13, color: "#A8A29E" }}>/month</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: "#615FFF", marginTop: 4 }}>
+                Volume-based
+              </span>
+            </div>
           </div>
         </div>
 
